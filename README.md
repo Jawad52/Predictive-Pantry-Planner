@@ -46,7 +46,7 @@ Installation
 Clone the repository:
 
 Bash
-git clone https://github.com/your-username/predictive-pantry-planner.git
+git clone https://github.com/Jawad52/Predictive-Pantry-Planner.git/
 Install dependencies:
 
 Bash
