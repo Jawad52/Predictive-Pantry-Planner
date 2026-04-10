@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:injectable/injectable.dart';
 import 'package:camera/camera.dart';
 import 'camera_event.dart';
 import 'camera_state.dart';
-import '../../domain/entities/recognition.dart';
 import '../../data/datasources/tflite_vision_datasource.dart';
 
+@injectable
 class CameraBloc extends Bloc<CameraEvent, CameraState> {
   final VisionDataSource visionDataSource;
   CameraController? _controller;
@@ -53,15 +54,9 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
 
   Future<void> _onProcessFrame(ProcessCameraFrame event, Emitter<CameraState> emit) async {
     _isProcessing = true;
-    
-    // In a real implementation, we would use 'compute' or a dedicated Isolate 
-    // to handle the YUV -> RGB conversion and TFLite inference.
     try {
-      // Placeholder for actual inference logic
-      // List<Recognition> recognitions = await visionDataSource.predictFromStream(event.image);
-      
+      // Logic for frame processing...
       if (state is CameraReady || state is CameraScanning) {
-        // For now, emitting an empty list to show the pipeline structure
         emit(CameraScanning(_controller!, []));
       }
     } finally {

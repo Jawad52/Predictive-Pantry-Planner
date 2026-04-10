@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
+import 'package:injectable/injectable.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 import '../../domain/entities/recognition.dart';
@@ -12,6 +13,7 @@ abstract class VisionDataSource {
   Future<List<Recognition>> predictFromStream(Uint8List bytes, int width, int height);
 }
 
+@LazySingleton(as: VisionDataSource)
 class TFLiteVisionDataSource implements VisionDataSource {
   Interpreter? _interpreter;
   List<String>? _labels;
@@ -44,7 +46,6 @@ class TFLiteVisionDataSource implements VisionDataSource {
   Future<List<Recognition>> predictFromStream(Uint8List bytes, int width, int height) async {
     if (_interpreter == null) return [];
 
-    // Convert YUV/BGRA to RGB image
     final image = img.Image.fromBytes(width: width, height: height, bytes: bytes.buffer);
     return _runInference(image);
   }
@@ -52,18 +53,9 @@ class TFLiteVisionDataSource implements VisionDataSource {
   List<Recognition> _runInference(img.Image image) {
     if (_interpreter == null || _labels == null) return [];
 
-    // 1. Pre-process: Resize to 300x300 (standard for SSD MobileNet)
     final resizedImage = img.copyResize(image, width: 300, height: 300);
-
-    // 2. Prepare Input Tensor [1, 300, 300, 3]
     var input = _imageToByteListFloat32(resizedImage, 300);
 
-    // 3. Prepare Output Tensors
-    // SSD MobileNet typically has 4 outputs:
-    // 0: Locations [1, 10, 4]
-    // 1: Classes [1, 10]
-    // 2: Scores [1, 10]
-    // 3: Number of detections [1]
     var outputLocations = List.generate(1, (_) => List.generate(10, (_) => List.filled(4, 0.0)));
     var outputClasses = List.generate(1, (_) => List.filled(10, 0.0));
     var outputScores = List.generate(1, (_) => List.filled(10, 0.0));
@@ -78,15 +70,13 @@ class TFLiteVisionDataSource implements VisionDataSource {
 
     _interpreter!.runForMultipleInputs([input], outputs as Map<int, Object>);
 
-    // 4. Post-process into Recognition objects
     List<Recognition> recognitions = [];
     for (int i = 0; i < 10; i++) {
       final score = outputScores[0][i];
-      if (score > 0.5) { // Confidence threshold
+      if (score > 0.5) {
         final labelIndex = outputClasses[0][i].toInt();
         final label = labelIndex < _labels!.length ? _labels![labelIndex] : 'Unknown';
 
-        // Bounding box [ymin, xmin, ymax, xmax]
         final loc = outputLocations[0][i];
         final rect = Rect.fromLTRB(
           loc[1] * image.width,

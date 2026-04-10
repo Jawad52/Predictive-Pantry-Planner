@@ -1,0 +1,1 @@
+Place your ssd_mobilenet.tflite model here.
