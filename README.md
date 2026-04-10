@@ -66,6 +66,3 @@ flutter run --release
 [ ] Phase 3: Expiration date OCR (Optical Character Recognition) refinement.
 
 [ ] Phase 4: Global recipe API integration for diverse dietary preferences.
-
-📄 License
-This project is licensed under the MIT License - see the LICENSE file for details.
