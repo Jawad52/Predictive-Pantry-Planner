@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 import 'package:sqflite/sqflite.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/pantry_item.dart';
@@ -10,6 +11,7 @@ abstract class PantryRepository {
   Future<Either<Failure, void>> deletePantryItem(String id);
 }
 
+@LazySingleton(as: PantryRepository)
 class PantryRepositoryImpl implements PantryRepository {
   final Database database;
 

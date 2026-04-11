@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:injectable/injectable.dart';
 import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../pantry/domain/entities/pantry_item.dart';
@@ -8,6 +9,7 @@ abstract class RecipeService {
   Future<Either<Failure, List<Recipe>>> generateRecipesFromInventory(List<PantryItem> inventory);
 }
 
+@lazySingleton
 class GenerateRecipeUseCase extends UseCase<List<Recipe>, List<PantryItem>> {
   final RecipeService recipeService;
 
@@ -19,12 +21,7 @@ class GenerateRecipeUseCase extends UseCase<List<Recipe>, List<PantryItem>> {
     final sortedInventory = List<PantryItem>.from(inventory)
       ..sort((a, b) => b.wastePriority.compareTo(a.wastePriority));
 
-    // 2. Extract high-priority items (e.g., expiring within 3 days)
-    final highPriorityItems = sortedInventory
-        .where((item) => item.daysUntilExpiry <= 3)
-        .toList();
-
-    // 3. Delegate to Gemini Nano / LLM Service
+    // 2. Delegate to Gemini Nano / LLM Service
     return await recipeService.generateRecipesFromInventory(sortedInventory);
   }
 }

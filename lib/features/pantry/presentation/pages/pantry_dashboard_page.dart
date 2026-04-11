@@ -71,17 +71,19 @@ class CameraHUD extends StatelessWidget {
               : (state as CameraScanning).controller;
           
           final recognitions = (state is CameraScanning) ? state.recognitions : [];
+          final previewSize = controller.value.previewSize;
 
           return Stack(
             fit: StackFit.expand,
             children: [
               CameraPreview(controller),
-              // Bounding Boxes Overlay
-              ...recognitions.map((rec) => RecognitionBox(
-                    recognition: rec,
-                    previewSize: controller.value.previewSize,
-                    screenSize: MediaQuery.of(context).size,
-                  )),
+              // Bounding Boxes Overlay - only show if previewSize is available
+              if (previewSize != null)
+                ...recognitions.map((rec) => RecognitionBox(
+                      recognition: rec,
+                      previewSize: previewSize,
+                      screenSize: MediaQuery.of(context).size,
+                    )),
               // Scanning Indicator
               if (state is CameraScanning)
                 const Positioned(

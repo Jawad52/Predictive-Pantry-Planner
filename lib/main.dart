@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
         textTheme: GoogleFonts.plusJakartaSansTextTheme(),
-        useMaterialDesign: true,
+        useMaterial3: true,
       ),
       home: BlocProvider(
         create: (context) => getIt<CameraBloc>()..add(InitializeCamera()),
