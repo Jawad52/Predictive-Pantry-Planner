@@ -1,12 +1,23 @@
 import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:injectable/injectable.dart';
 import '../../../../core/error/failures.dart';
 import '../../../pantry/domain/entities/pantry_item.dart';
 import '../../domain/entities/recipe.dart';
 import '../models/recipe_dto.dart';
 import '../../domain/usecases/generate_recipe_usecase.dart';
 
+@module
+abstract class GeminiModule {
+  @lazySingleton
+  GenerativeModel get model => GenerativeModel(
+        model: 'gemini-1.5-flash',
+        apiKey: const String.fromEnvironment('GEMINI_API_KEY'),
+      );
+}
+
+@LazySingleton(as: RecipeService)
 class GeminiRecipeService implements RecipeService {
   final GenerativeModel model;
 
