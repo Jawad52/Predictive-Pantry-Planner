@@ -1,0 +1,10 @@
+background
+apple
+banana
+milk
+bread
+chicken
+egg
+orange
+tomato
+cheese
